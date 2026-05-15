@@ -10,7 +10,8 @@
       const text = node.textContent || "";
       const match = text.match(/^(.+で)(.+)を行きたいです。$/);
       if (!match) return;
-      node.textContent = `${match[1]}${match[2]}を${objectAction(match[2])}です。`;
+      const nextText = `${match[1]}${match[2]}を${objectAction(match[2])}です。`;
+      if (text !== nextText) node.textContent = nextText;
     });
   };
 
@@ -23,13 +24,15 @@
       if (!term) return;
 
       if (!meaning || meaning === "播放發音") {
-        if (parts.length > 1 && parts[0] === parts[1]) node.textContent = term;
+        if (parts.length > 1 && parts[0] === parts[1] && current !== term) node.textContent = term;
         return;
       }
 
       if (meaning === term) return;
-      node.textContent = `${term}・${meaning}`;
-      node.setAttribute("aria-label", `${term}，${meaning}`);
+      const nextText = `${term}・${meaning}`;
+      if (current !== nextText) node.textContent = nextText;
+      const nextLabel = `${term}，${meaning}`;
+      if (node.getAttribute("aria-label") !== nextLabel) node.setAttribute("aria-label", nextLabel);
     });
   };
 
