@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Language OS</title>
-    <link rel="stylesheet" href="/styles.css?v=voice-record-1" />
+    <link rel="stylesheet" href="/styles.css?v=coach-v3" />
   </head>
   <body>
     <div class="mode-switch" aria-label="Learning language">
@@ -19,9 +19,17 @@
       <section class="game" id="game" aria-live="polite">
         <div class="game-toolbar">
           <div class="game-header" id="game-header"></div>
-          <button class="learned-open" id="learned-open" type="button" hidden>已學會 0</button>
+          <div class="toolbar-actions">
+            <button class="learned-open" id="hide-learned" type="button" hidden>隱藏已學會</button>
+            <button class="learned-open" id="learned-open" type="button" hidden>已學會 0</button>
+          </div>
         </div>
-        <div class="results-list" id="results-list"></div>
+        <div class="lesson-shell" id="lesson-shell" hidden>
+          <section class="structure-panel" id="structure-panel"></section>
+          <nav class="category-tabs" id="category-tabs" aria-label="分類"></nav>
+          <div class="results-list" id="results-list"></div>
+          <section class="practice-panel" id="practice-panel"></section>
+        </div>
         <section class="learned-panel" id="learned-panel" hidden>
           <div class="learned-panel-head">
             <div>
@@ -40,6 +48,6 @@
         </section>
       </section>
     </main>
-    <script src="/app.js?v=voice-record-1"></script>
+    <script src="/app.js?v=coach-v3"></script>
   </body>
 </html>
