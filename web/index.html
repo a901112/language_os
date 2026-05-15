@@ -3,8 +3,9 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Language OS</title>
+    <title>Kotoha</title>
     <link rel="stylesheet" href="/styles.css?v=coach-v3" />
+    <link rel="stylesheet" href="/kotoha-polish.css?v=loading-map-1" />
   </head>
   <body>
     <div class="mode-switch" aria-label="Learning language">
@@ -12,7 +13,7 @@
       <button class="mode-button active" type="button" data-mode="ja" aria-pressed="true">日</button>
     </div>
     <main class="home" id="home">
-      <h1 class="brand">Little Lessons</h1>
+      <h1 class="brand">Kotoha</h1>
       <form class="search" id="lesson-form">
         <input id="sentence-input" type="text" autocomplete="off" autofocus placeholder="你在想甚麼呢?" aria-label="你在想甚麼呢?" />
       </form>
@@ -38,6 +39,12 @@
             </div>
             <button class="icon-button" id="learned-close" type="button" aria-label="關閉">×</button>
           </div>
+          <section class="about-kotoha" aria-label="About Kotoha">
+            <h3>Kotoha</h3>
+            <p>一句話，長出你的語言地圖。</p>
+            <p>Kotoha turns what you want to say into a personal language map.</p>
+            <p>Concept, product direction, and learning design by Jimmy.</p>
+          </section>
           <div class="learned-actions">
             <button class="soft-button" id="learned-export" type="button">匯出記錄檔</button>
             <button class="soft-button" id="learned-import" type="button">匯入</button>
@@ -47,8 +54,10 @@
           <div class="learned-list" id="learned-list"></div>
         </section>
       </section>
+      <footer class="creator-credit">Concept &amp; Design by Jimmy</footer>
     </main>
     <script src="/app.js?v=coach-v3"></script>
     <script src="/practice-fix.js?v=coach-v3b"></script>
+    <script src="/kotoha-loading.js?v=loading-map-1"></script>
   </body>
 </html>
