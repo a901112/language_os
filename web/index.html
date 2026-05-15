@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Language OS</title>
-    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/styles.css?v=voice-record-1" />
   </head>
   <body>
     <div class="mode-switch" aria-label="Learning language">
@@ -17,10 +17,29 @@
         <input id="sentence-input" type="text" autocomplete="off" autofocus placeholder="你在想甚麼呢?" aria-label="你在想甚麼呢?" />
       </form>
       <section class="game" id="game" aria-live="polite">
-        <div class="game-header" id="game-header"></div>
+        <div class="game-toolbar">
+          <div class="game-header" id="game-header"></div>
+          <button class="learned-open" id="learned-open" type="button" hidden>已學會 0</button>
+        </div>
         <div class="results-list" id="results-list"></div>
+        <section class="learned-panel" id="learned-panel" hidden>
+          <div class="learned-panel-head">
+            <div>
+              <h2>已學會</h2>
+              <p id="learned-summary"></p>
+            </div>
+            <button class="icon-button" id="learned-close" type="button" aria-label="關閉">×</button>
+          </div>
+          <div class="learned-actions">
+            <button class="soft-button" id="learned-export" type="button">匯出記錄檔</button>
+            <button class="soft-button" id="learned-import" type="button">匯入</button>
+            <button class="soft-button danger" id="learned-clear" type="button">清空</button>
+            <input id="learned-file" type="file" accept="application/json" hidden />
+          </div>
+          <div class="learned-list" id="learned-list"></div>
+        </section>
       </section>
     </main>
-    <script src="/app.js"></script>
+    <script src="/app.js?v=voice-record-1"></script>
   </body>
 </html>
