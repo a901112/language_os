@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Language OS</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="mode-switch" aria-label="Learning language">
+      <button class="mode-button" type="button" data-mode="en" aria-pressed="false">英</button>
+      <button class="mode-button active" type="button" data-mode="ja" aria-pressed="true">日</button>
+    </div>
+    <main class="home" id="home">
+      <h1 class="brand">Little Lessons</h1>
+      <form class="search" id="lesson-form">
+        <input id="sentence-input" type="text" autocomplete="off" autofocus placeholder="你在想甚麼呢?" aria-label="你在想甚麼呢?" />
+      </form>
+      <section class="game" id="game" aria-live="polite">
+        <div class="game-header" id="game-header"></div>
+        <div class="results-list" id="results-list"></div>
+      </section>
+    </main>
+    <script src="/app.js"></script>
+  </body>
+</html>
