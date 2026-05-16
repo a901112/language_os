@@ -4,18 +4,31 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Kotoha</title>
-    <link rel="stylesheet" href="/styles.css?v=coach-v3" />
-    <link rel="stylesheet" href="/kotoha-polish.css?v=loading-map-1" />
+    <link rel="stylesheet" href="/styles.css?v=kotoha-v4" />
+    <link rel="stylesheet" href="/kotoha-polish.css?v=kotoha-v4" />
+    <link rel="stylesheet" href="/kotoha-v4.css?v=kotoha-coach-v1" />
   </head>
   <body>
-    <div class="mode-switch" aria-label="Learning language">
+    <button class="hamburger-button" id="feature-menu-open" type="button" aria-label="開啟功能選單">☰</button>
+    <nav class="feature-drawer" id="feature-drawer" hidden>
+      <div class="feature-drawer-head">
+        <strong>Kotoha</strong>
+        <button class="icon-button" id="feature-menu-close" type="button" aria-label="關閉">×</button>
+      </div>
+      <button class="feature-nav-item active" data-feature="map" type="button">語言地圖</button>
+      <button class="feature-nav-item" data-feature="coach" type="button">AI 教練</button>
+      <button class="feature-nav-item" data-feature="learned" type="button">已學會</button>
+      <button class="feature-nav-item" data-feature="about" type="button">關於 Kotoha</button>
+    </nav>
+    <div class="feature-backdrop" id="feature-backdrop" hidden></div>
+    <div class="mode-switch" aria-label="Learning language" hidden>
       <button class="mode-button" type="button" data-mode="en" aria-pressed="false">英</button>
       <button class="mode-button active" type="button" data-mode="ja" aria-pressed="true">日</button>
     </div>
     <main class="home" id="home">
       <h1 class="brand">Kotoha</h1>
       <form class="search" id="lesson-form">
-        <input id="sentence-input" type="text" autocomplete="off" autofocus placeholder="你在想甚麼呢?" aria-label="你在想甚麼呢?" />
+        <input id="sentence-input" type="text" autocomplete="off" autofocus placeholder="今天你想用日文說什麼？" aria-label="今天你想用日文說什麼？" />
       </form>
       <section class="game" id="game" aria-live="polite">
         <div class="game-toolbar">
@@ -55,10 +68,30 @@
           <div class="learned-list" id="learned-list"></div>
         </section>
       </section>
+      <section class="coach-shell" id="coach-shell" hidden>
+        <div class="coach-header">
+          <div>
+            <h2>AI 教練</h2>
+            <p>用簡單日文聊一點點，慢慢敢開口。</p>
+          </div>
+          <div class="coach-toggles">
+            <button id="coach-translation-toggle" class="soft-button active" type="button">翻譯 開</button>
+            <button id="coach-grammar-toggle" class="soft-button" type="button">文法 關</button>
+            <button id="coach-clear" class="soft-button" type="button">清空對話</button>
+          </div>
+        </div>
+        <div class="coach-messages" id="coach-messages" aria-live="polite"></div>
+        <form class="coach-form" id="coach-form">
+          <input id="coach-input" type="text" autocomplete="off" placeholder="用中文或日文回教練一句話…" />
+          <button class="coach-send" type="submit">送出</button>
+        </form>
+      </section>
       <footer class="creator-credit">Concept &amp; Product Design by Jimmy Chou</footer>
     </main>
-    <script src="/vocabulary-graph.js?v=kotoha-v3"></script>
-    <script src="/app.js?v=kotoha-v3"></script>
-    <script src="/kotoha-loading.js?v=loading-map-1"></script>
+    <script src="/vocabulary-graph.js?v=kotoha-v4"></script>
+    <script src="/app.js?v=kotoha-v4"></script>
+    <script src="/feature-menu.js?v=kotoha-coach-v1"></script>
+    <script src="/coach.js?v=kotoha-coach-v1"></script>
+    <script src="/kotoha-loading.js?v=kotoha-v4"></script>
   </body>
 </html>
