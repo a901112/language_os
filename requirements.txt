@@ -1,1 +1,2 @@
-# No third-party package is required for the deployed MVP.
+setuptools>=69
+-e .
