@@ -7,6 +7,7 @@ ENV HOST=0.0.0.0
 WORKDIR /app
 
 COPY server.py ./server.py
+COPY sitecustomize.py ./sitecustomize.py
 COPY requirements.txt ./requirements.txt
 COPY web ./web
 
