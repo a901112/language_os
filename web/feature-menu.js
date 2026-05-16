@@ -17,6 +17,8 @@
 
   if (!openButton || !drawer || !backdrop || !home || !coachShell) return;
 
+  loadCoachBridge();
+
   let activeFeature = localStorage.getItem(KOTOHA_ACTIVE_FEATURE_KEY) || "map";
   if (!["map", "coach"].includes(activeFeature)) activeFeature = "map";
 
@@ -90,6 +92,14 @@
         learnedPanel.querySelector(".about-kotoha")?.scrollIntoView({ block: "start", behavior: "smooth" });
       }
     }
+  }
+
+  function loadCoachBridge() {
+    if (document.querySelector('script[src*="coach-api-bridge.js"]')) return;
+    const script = document.createElement("script");
+    script.src = "/coach-api-bridge.js?v=kotoha-coach-hotfix1";
+    script.async = true;
+    document.head.append(script);
   }
 
   window.KotohaFeature = {
