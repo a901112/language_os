@@ -1,1 +1,1 @@
-kotoha coach deploy ping 2026-05-16 package-sitecustomize
+kotoha coach deploy ping 2026-05-16 render-startcommand-coach-api
