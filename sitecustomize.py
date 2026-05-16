@@ -3,9 +3,8 @@ from __future__ import annotations
 import json
 import os
 import re
-import urllib.request
-from typing import Any
 import http.server
+from typing import Any
 
 APP_VERSION = "2026-05-16-kotoha-coach-api-fix"
 DEFAULT_MODEL = "gpt-5"
@@ -51,87 +50,87 @@ def local_coach(message: str, settings: dict[str, Any]) -> dict[str, Any]:
     show_grammar = bool(settings.get("showGrammar"))
     text = str(message or "")
     lower = text.lower()
-    has_food = bool(re.search(r"吃|飽|餓|飯|拉麵|壽司|食べ|お腹|ご飯|ラーメン|寿司", text))
-    has_guess = bool(re.search(r"你覺得|覺得|猜|你猜|と思う|と思います|何だと思う", text))
-    has_cat = bool(re.search(r"貓|猫|ねこ", text))
-    has_ski = bool(re.search(r"滑雪|スキー|snowboard|snow", lower))
-    has_tired = bool(re.search(r"累|疲れ|しんどい|疲勞", text))
+    has_food = bool(re.search(r"吃|飽|餓|飯|拉麵|壽司|\u98df\u3079|\u304a\u8179|\u3054\u98ef|\u30e9\u30fc\u30e1\u30f3|\u5bff\u53f8", text))
+    has_guess = bool(re.search(r"你覺得|覺得|猜|你猜|\u3068\u601d\u3046|\u3068\u601d\u3044\u307e\u3059|\u4f55\u3060\u3068\u601d\u3046", text))
+    has_cat = bool(re.search(r"貓|\u732b|\u306d\u3053", text))
+    has_ski = bool(re.search(r"滑雪|\u30b9\u30ad\u30fc|snowboard|snow", lower))
+    has_tired = bool(re.search(r"累|\u75b2\u308c|\u3057\u3093\u3069\u3044|疲勞", text))
 
     if has_guess and has_food:
         return result(
-            "何を食べましたか。ラーメンですか。",
+            "\u4f55\u3092\u98df\u3079\u307e\u3057\u305f\u304b\u3002\u30e9\u30fc\u30e1\u30f3\u3067\u3059\u304b\u3002",
             "你吃了什麼呢？是拉麵嗎？",
             "你想讓教練猜猜你吃了什麼。",
-            "ラーメンを食べました。",
+            "\u30e9\u30fc\u30e1\u30f3\u3092\u98df\u3079\u307e\u3057\u305f\u3002",
             "我吃了拉麵。",
             "",
-            tip("〜を食べました", "表示「吃了～」。食物後面常接 を。", "ラーメンを食べました。") if show_grammar else tip(),
-            [option("ラーメンです", "ラーメンです。", "是拉麵。"), option("寿司を食べました", "寿司を食べました。", "我吃了壽司。"), option("秘密です", "秘密です。", "是秘密。")],
-            "food", "guess_food", "〜を食べました",
+            tip("\u301c\u3092\u98df\u3079\u307e\u3057\u305f", "表示「吃了～」。食物後面常接 を。", "\u30e9\u30fc\u30e1\u30f3\u3092\u98df\u3079\u307e\u3057\u305f\u3002") if show_grammar else tip(),
+            [option("\u30e9\u30fc\u30e1\u30f3\u3067\u3059", "\u30e9\u30fc\u30e1\u30f3\u3067\u3059\u3002", "是拉麵。"), option("\u5bff\u53f8\u3092\u98df\u3079\u307e\u3057\u305f", "\u5bff\u53f8\u3092\u98df\u3079\u307e\u3057\u305f\u3002", "我吃了壽司。"), option("\u79d8\u5bc6\u3067\u3059", "\u79d8\u5bc6\u3067\u3059\u3002", "是秘密。")],
+            "food", "guess_food", "\u301c\u3092\u98df\u3079\u307e\u3057\u305f",
         )
 
     if has_food:
         return result(
-            "お腹いっぱいなんですね。何を食べましたか。",
+            "\u304a\u8179\u3044\u3063\u3071\u3044\u306a\u3093\u3067\u3059\u306d\u3002\u4f55\u3092\u98df\u3079\u307e\u3057\u305f\u304b\u3002",
             "你吃得很飽對吧。你吃了什麼？",
             "我剛吃得很飽。",
-            "ラーメンを食べました。",
+            "\u30e9\u30fc\u30e1\u30f3\u3092\u98df\u3079\u307e\u3057\u305f\u3002",
             "我吃了拉麵。",
             "",
-            tip("〜を食べました", "表示「吃了～」。食物後面常接 を。", "ラーメンを食べました。") if show_grammar else tip(),
-            [option("ラーメンを食べました", "ラーメンを食べました。", "我吃了拉麵。"), option("ご飯を食べました", "ご飯を食べました。", "我吃了飯。"), option("食べすぎました", "食べすぎました。", "我吃太多了。")],
-            "food", "share_food", "〜を食べました",
+            tip("\u301c\u3092\u98df\u3079\u307e\u3057\u305f", "表示「吃了～」。食物後面常接 を。", "\u30e9\u30fc\u30e1\u30f3\u3092\u98df\u3079\u307e\u3057\u305f\u3002") if show_grammar else tip(),
+            [option("\u30e9\u30fc\u30e1\u30f3\u3092\u98df\u3079\u307e\u3057\u305f", "\u30e9\u30fc\u30e1\u30f3\u3092\u98df\u3079\u307e\u3057\u305f\u3002", "我吃了拉麵。"), option("\u3054\u98ef\u3092\u98df\u3079\u307e\u3057\u305f", "\u3054\u98ef\u3092\u98df\u3079\u307e\u3057\u305f\u3002", "我吃了飯。"), option("\u98df\u3079\u3059\u304e\u307e\u3057\u305f", "\u98df\u3079\u3059\u304e\u307e\u3057\u305f\u3002", "我吃太多了。")],
+            "food", "share_food", "\u301c\u3092\u98df\u3079\u307e\u3057\u305f",
         )
 
     if has_cat:
-        corrective = "猫好き" in text and "猫が好き" not in text
+        corrective = "\u732b\u597d\u304d" in text and "\u732b\u304c\u597d\u304d" not in text
         return result(
-            "意味はわかります。自然に言うなら「猫が好きです」です。" if corrective else "いいですね。猫が好きなんですね。",
+            "\u610f\u5473\u306f\u308f\u304b\u308a\u307e\u3059\u3002\u81ea\u7136\u306b\u8a00\u3046\u306a\u3089\u300c\u732b\u304c\u597d\u304d\u3067\u3059\u300d\u3067\u3059\u3002" if corrective else "\u3044\u3044\u3067\u3059\u306d\u3002\u732b\u304c\u597d\u304d\u306a\u3093\u3067\u3059\u306d\u3002",
             "意思懂。自然一點可以說「猫が好きです」。" if corrective else "很好耶。你喜歡貓對吧。",
             "我喜歡貓。",
-            "猫が好きです。" if corrective else "はい、猫が好きです。",
+            "\u732b\u304c\u597d\u304d\u3067\u3059\u3002" if corrective else "\u306f\u3044\u3001\u732b\u304c\u597d\u304d\u3067\u3059\u3002",
             "我喜歡貓。" if corrective else "是的，我喜歡貓。",
-            "猫好きです → 猫が好きです" if corrective else "",
-            tip("〜が好きです", "喜歡的對象通常用 が。", "猫が好きです。") if show_grammar else tip(),
-            [option("犬も好きです", "犬も好きです。", "我也喜歡狗。"), option("猫を飼っています", "猫を飼っています。", "我有養貓。"), option("動物が好きです", "動物が好きです。", "我喜歡動物。")],
-            "animal", "correct_sentence" if corrective else "talk_about_likes", "〜が好きです",
+            "\u732b\u597d\u304d\u3067\u3059 \u2192 \u732b\u304c\u597d\u304d\u3067\u3059" if corrective else "",
+            tip("\u301c\u304c\u597d\u304d\u3067\u3059", "喜歡的對象通常用 が。", "\u732b\u304c\u597d\u304d\u3067\u3059\u3002") if show_grammar else tip(),
+            [option("\u72ac\u3082\u597d\u304d\u3067\u3059", "\u72ac\u3082\u597d\u304d\u3067\u3059\u3002", "我也喜歡狗。"), option("\u732b\u3092\u98fc\u3063\u3066\u3044\u307e\u3059", "\u732b\u3092\u98fc\u3063\u3066\u3044\u307e\u3059\u3002", "我有養貓。"), option("\u52d5\u7269\u304c\u597d\u304d\u3067\u3059", "\u52d5\u7269\u304c\u597d\u304d\u3067\u3059\u3002", "我喜歡動物。")],
+            "animal", "correct_sentence" if corrective else "talk_about_likes", "\u301c\u304c\u597d\u304d\u3067\u3059",
         )
 
     if has_ski:
         return result(
-            "いいですね。明日、スキー場に行きたいんですね。",
+            "\u3044\u3044\u3067\u3059\u306d\u3002\u660e\u65e5\u3001\u30b9\u30ad\u30fc\u5834\u306b\u884c\u304d\u305f\u3044\u3093\u3067\u3059\u306d\u3002",
             "不錯耶。你明天想去滑雪場對吧。",
             "我明天想去滑雪。",
-            "はい、明日スキー場に行きたいです。",
+            "\u306f\u3044\u3001\u660e\u65e5\u30b9\u30ad\u30fc\u5834\u306b\u884c\u304d\u305f\u3044\u3067\u3059\u3002",
             "是的，我明天想去滑雪場。",
             "",
-            tip("〜たいです", "表示「想做某事」。", "行きたいです。") if show_grammar else tip(),
-            [option("スノーボードをしたいです", "スノーボードをしたいです。", "我想滑雪板。"), option("ウェアをレンタルしたいです", "ウェアをレンタルしたいです。", "我想租雪衣。"), option("友達と行きたいです", "友達と行きたいです。", "我想和朋友去。")],
-            "ski", "talk_about_plans", "〜たいです",
+            tip("\u301c\u305f\u3044\u3067\u3059", "表示「想做某事」。", "\u884c\u304d\u305f\u3044\u3067\u3059\u3002") if show_grammar else tip(),
+            [option("\u30b9\u30ce\u30fc\u30dc\u30fc\u30c9\u3092\u3057\u305f\u3044\u3067\u3059", "\u30b9\u30ce\u30fc\u30dc\u30fc\u30c9\u3092\u3057\u305f\u3044\u3067\u3059\u3002", "我想滑雪板。"), option("\u30a6\u30a7\u30a2\u3092\u30ec\u30f3\u30bf\u30eb\u3057\u305f\u3044\u3067\u3059", "\u30a6\u30a7\u30a2\u3092\u30ec\u30f3\u30bf\u30eb\u3057\u305f\u3044\u3067\u3059\u3002", "我想租雪衣。"), option("\u53cb\u9054\u3068\u884c\u304d\u305f\u3044\u3067\u3059", "\u53cb\u9054\u3068\u884c\u304d\u305f\u3044\u3067\u3059\u3002", "我想和朋友去。")],
+            "ski", "talk_about_plans", "\u301c\u305f\u3044\u3067\u3059",
         )
 
     if has_tired:
         return result(
-            "疲れたんですね。今日はゆっくり休みましょう。",
+            "\u75b2\u308c\u305f\u3093\u3067\u3059\u306d\u3002\u4eca\u65e5\u306f\u3086\u3063\u304f\u308a\u4f11\u307f\u307e\u3057\u3087\u3046\u3002",
             "你累了對吧。今天好好休息吧。",
             "我有點累。",
-            "少し疲れました。",
+            "\u5c11\u3057\u75b2\u308c\u307e\u3057\u305f\u3002",
             "我有點累。",
             "",
-            tip("少し〜ました", "少し 表示「有點」。語氣比較柔和。", "少し疲れました。") if show_grammar else tip(),
-            [option("少し疲れました", "少し疲れました。", "我有點累。"), option("今日は早く寝ます", "今日は早く寝ます。", "我今天早點睡。"), option("でも楽しかったです", "でも楽しかったです。", "但是很開心。")],
-            "tired", "share_feeling", "少し〜ました",
+            tip("\u5c11\u3057\u301c\u307e\u3057\u305f", "少し 表示「有點」。語氣比較柔和。", "\u5c11\u3057\u75b2\u308c\u307e\u3057\u305f\u3002") if show_grammar else tip(),
+            [option("\u5c11\u3057\u75b2\u308c\u307e\u3057\u305f", "\u5c11\u3057\u75b2\u308c\u307e\u3057\u305f\u3002", "我有點累。"), option("\u4eca\u65e5\u306f\u65e9\u304f\u5bdd\u307e\u3059", "\u4eca\u65e5\u306f\u65e9\u304f\u5bdd\u307e\u3059\u3002", "我今天早點睡。"), option("\u3067\u3082\u697d\u3057\u304b\u3063\u305f\u3067\u3059", "\u3067\u3082\u697d\u3057\u304b\u3063\u305f\u3067\u3059\u3002", "但是很開心。")],
+            "tired", "share_feeling", "\u5c11\u3057\u301c\u307e\u3057\u305f",
         )
 
     return result(
-        "いいですね。もう少し教えてください。",
+        "\u3044\u3044\u3067\u3059\u306d\u3002\u3082\u3046\u5c11\u3057\u6559\u3048\u3066\u304f\u3060\u3055\u3044\u3002",
         "不錯耶。再多告訴我一點。",
         text,
-        "今日は何をしましたか。",
+        "\u4eca\u65e5\u306f\u4f55\u3092\u3057\u307e\u3057\u305f\u304b\u3002",
         "今天做了什麼？",
         "",
         tip(),
-        [option("今日は何をしましたか", "今日は何をしましたか。", "今天做了什麼？"), option("何が好きですか", "何が好きですか。", "你喜歡什麼？"), option("明日、何をしたいですか", "明日、何をしたいですか。", "明天想做什麼？")],
+        [option("\u4eca\u65e5\u306f\u4f55\u3092\u3057\u307e\u3057\u305f\u304b", "\u4eca\u65e5\u306f\u4f55\u3092\u3057\u307e\u3057\u305f\u304b\u3002", "今天做了什麼？"), option("\u4f55\u304c\u597d\u304d\u3067\u3059\u304b", "\u4f55\u304c\u597d\u304d\u3067\u3059\u304b\u3002", "你喜歡什麼？"), option("\u660e\u65e5\u3001\u4f55\u3092\u3057\u305f\u3044\u3067\u3059\u304b", "\u660e\u65e5\u3001\u4f55\u3092\u3057\u305f\u3044\u3067\u3059\u304b\u3002", "明天想做什麼？")],
         "unknown", "continue_conversation", "simple_question",
     )
 
@@ -143,7 +142,7 @@ def handle_coach(handler: http.server.SimpleHTTPRequestHandler) -> None:
     except Exception:
         handler.send_error(400, "Invalid JSON")
         return
-    message = str(payload.get("message") or "").strip() or "今日は何をしましたか。"
+    message = str(payload.get("message") or "").strip() or "\u4eca\u65e5\u306f\u4f55\u3092\u3057\u307e\u3057\u305f\u304b\u3002"
     settings = clean_settings(payload.get("settings"))
     send_json(handler, local_coach(message, settings))
 
