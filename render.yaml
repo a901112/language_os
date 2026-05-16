@@ -4,7 +4,7 @@ services:
     runtime: python
     plan: free
     buildCommand: pip install -r requirements.txt
-    startCommand: python -c "import sitecustomize, runpy; runpy.run_path('server.py', run_name='__main__')"
+    startCommand: python server_runtime.py
     autoDeploy: true
     envVars:
       - key: HOST
