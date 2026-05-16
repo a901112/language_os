@@ -1,1 +1,1 @@
-kotoha coach deploy ping 2026-05-16 install-sitecustomize-runtime
+kotoha coach deploy ping 2026-05-16 coach-api-bridge
