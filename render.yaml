@@ -4,12 +4,18 @@ services:
     runtime: python
     plan: free
     buildCommand: pip install -r requirements.txt
-    startCommand: python server.py
+    startCommand: python -c "import sitecustomize, runpy; runpy.run_path('server.py', run_name='__main__')"
     autoDeploy: true
     envVars:
       - key: HOST
         value: 0.0.0.0
       - key: OPENAI_MODEL
-        value: gpt-5-mini
+        value: gpt-5
+      - key: OPENAI_REASONING_EFFORT
+        value: medium
+      - key: OPENAI_MAX_OUTPUT_TOKENS
+        value: "3600"
+      - key: OPENAI_ALLOW_MINI_FALLBACK
+        value: "0"
       - key: OPENAI_API_KEY
         sync: false
