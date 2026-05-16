@@ -7,10 +7,11 @@ ENV HOST=0.0.0.0
 WORKDIR /app
 
 COPY server.py ./server.py
-COPY sitecustomize.py ./sitecustomize.py
+COPY coach_api.py ./coach_api.py
+COPY server_runtime.py ./server_runtime.py
 COPY requirements.txt ./requirements.txt
 COPY web ./web
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-CMD ["python", "-c", "import sitecustomize, runpy; runpy.run_path('server.py', run_name='__main__')"]
+CMD ["python", "server_runtime.py"]
