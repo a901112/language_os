@@ -1,1 +1,1 @@
-kotoha coach deploy ping 2026-05-16
+kotoha coach deploy ping 2026-05-16 docker-copy
