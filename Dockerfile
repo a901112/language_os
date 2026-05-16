@@ -13,4 +13,4 @@ COPY web ./web
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-CMD ["python", "server.py"]
+CMD ["python", "-c", "import sitecustomize, runpy; runpy.run_path('server.py', run_name='__main__')"]
