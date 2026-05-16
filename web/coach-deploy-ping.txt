@@ -1,1 +1,1 @@
-kotoha coach deploy ping 2026-05-16 coach-api-bridge
+kotoha coach deploy ping 2026-05-16 docker-build-fix
