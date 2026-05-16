@@ -1,1 +1,1 @@
-kotoha coach deploy ping 2026-05-16 clean-coach-patch
+kotoha coach deploy ping 2026-05-16 ascii-sitecustomize-2
