@@ -11,16 +11,16 @@
   const mapForm = document.querySelector("#lesson-form");
   const game = document.querySelector("#game");
   const coachShell = document.querySelector("#coach-shell");
+  const quizShell = document.querySelector("#quiz-shell");
+  const learningMapShell = document.querySelector("#learning-map-shell");
   const learnedPanel = document.querySelector("#learned-panel");
   const sentenceInput = document.querySelector("#sentence-input");
   const coachInput = document.querySelector("#coach-input");
 
   if (!openButton || !drawer || !backdrop || !home || !coachShell) return;
 
-  loadCoachBridge();
-
   let activeFeature = localStorage.getItem(KOTOHA_ACTIVE_FEATURE_KEY) || "map";
-  if (!["map", "coach"].includes(activeFeature)) activeFeature = "map";
+  if (!["map", "coach", "quiz", "learning-map"].includes(activeFeature)) activeFeature = "map";
 
   openButton.addEventListener("click", openDrawer);
   closeButton?.addEventListener("click", closeDrawer);
@@ -39,7 +39,7 @@
         setFeature("map");
         openLearnedPanel(true);
       } else {
-        setFeature(feature === "coach" ? "coach" : "map");
+        setFeature(feature || "map");
       }
       closeDrawer();
     });
@@ -62,24 +62,35 @@
   }
 
   function setFeature(feature, options = {}) {
-    activeFeature = feature === "coach" ? "coach" : "map";
+    activeFeature = ["map", "coach", "quiz", "learning-map"].includes(feature) ? feature : "map";
     localStorage.setItem(KOTOHA_ACTIVE_FEATURE_KEY, activeFeature);
     home.dataset.feature = activeFeature;
 
     const showMap = activeFeature === "map";
+    const showCoach = activeFeature === "coach";
+    const showQuiz = activeFeature === "quiz";
+    const showLearningMap = activeFeature === "learning-map";
     [brand, mapForm, game].forEach((node) => {
       if (node) node.hidden = !showMap;
     });
-    coachShell.hidden = showMap;
+    if (coachShell) coachShell.hidden = !showCoach;
+    if (quizShell) quizShell.hidden = !showQuiz;
+    if (learningMapShell) learningMapShell.hidden = !showLearningMap;
     navItems.forEach((item) => item.classList.toggle("active", item.dataset.feature === activeFeature));
 
     if (showMap) {
       window.KotohaCoach?.renderCoachHistory?.();
       if (options.focus !== false) sentenceInput?.focus();
-    } else {
+    } else if (showCoach) {
       learnedPanel.hidden = true;
       window.KotohaCoach?.renderCoachHistory?.();
       if (options.focus !== false) coachInput?.focus();
+    } else if (showQuiz) {
+      learnedPanel.hidden = true;
+      window.KotohaQuiz?.startSession?.();
+    } else if (showLearningMap) {
+      learnedPanel.hidden = true;
+      window.KotohaProgress?.renderLearningMap?.();
     }
   }
 
@@ -92,14 +103,6 @@
         learnedPanel.querySelector(".about-kotoha")?.scrollIntoView({ block: "start", behavior: "smooth" });
       }
     }
-  }
-
-  function loadCoachBridge() {
-    if (document.querySelector('script[src*="coach-api-bridge.js"]')) return;
-    const script = document.createElement("script");
-    script.src = "/coach-api-bridge.js?v=kotoha-coach-hotfix1";
-    script.async = true;
-    document.head.append(script);
   }
 
   window.KotohaFeature = {
