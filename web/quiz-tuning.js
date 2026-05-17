@@ -3,6 +3,17 @@
   const LEARNED_MASTERY = 100;
   const DAY_MS = 24 * 60 * 60 * 1000;
 
+  if (!window.__kotohaLearnedEventBridge) {
+    const originalSetItem = localStorage.setItem.bind(localStorage);
+    localStorage.setItem = function setItemWithLearnedEvent(key, value) {
+      originalSetItem(key, value);
+      if (key === LEARNED_KEY) {
+        window.dispatchEvent(new CustomEvent("kotoha-learned-changed"));
+      }
+    };
+    window.__kotohaLearnedEventBridge = true;
+  }
+
   function loadLearned() {
     try {
       const parsed = JSON.parse(localStorage.getItem(LEARNED_KEY) || "{}");
