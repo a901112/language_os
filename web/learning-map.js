@@ -2,6 +2,8 @@
   const PROGRESS_KEY = "kotoha-learning-progress-v1";
   const LEARNED_KEY = "language-os-learned-v1";
   const DAY_MS = 24 * 60 * 60 * 1000;
+  const MASTERED_THRESHOLD = 65;
+  const LEARNED_MASTERY = 100;
 
   const PATTERNS = [
     { id: "pattern_ga_suki_desu", type: "pattern", categoryId: "pattern", label: "〜が好きです", zh: "喜歡～", ja: "猫が好きです。", promptZh: "我喜歡貓。", answer: "猫が好きです。", blank: "猫＿好きです。", blankAnswer: "が", essential: ["猫", "好き"], level: 1 },
@@ -51,24 +53,7 @@
   function getKnowledgeItems() { return [...getVocabItems(), ...PATTERNS]; }
 
   function baseRecord(item, mastery = 8) {
-    return {
-      id: item.id,
-      type: item.type,
-      categoryId: item.categoryId,
-      label: item.label || item.ja || item.id,
-      zh: item.zh || "",
-      mastery,
-      seenCount: 0,
-      askedCount: 0,
-      correctCount: 0,
-      wrongCount: 0,
-      correctStreak: 0,
-      wrongStreak: 0,
-      lastAskedAt: "",
-      nextDueAt: "",
-      recentQuestionIds: [],
-      lastQuestionType: "",
-    };
+    return { id: item.id, type: item.type, categoryId: item.categoryId, label: item.label || item.ja || item.id, zh: item.zh || "", mastery, learned: false, seenCount: 0, askedCount: 0, correctCount: 0, wrongCount: 0, correctStreak: 0, wrongStreak: 0, lastAskedAt: "", nextDueAt: "", recentQuestionIds: [], lastQuestionType: "" };
   }
 
   function learnedKeyForItem(item) {
@@ -81,19 +66,32 @@
     return `ja|${item.rawItem.category || "object"}|${item.rawItem.ja}`.toLowerCase();
   }
 
+  function isItemLearned(item, learned = loadLearned()) {
+    return Boolean(learned[learnedKeyForItem(item)] || learned[legacyLearnedKeyForItem(item)]);
+  }
+
+  function lockLearnedRecord(record) {
+    record.learned = true;
+    record.mastery = LEARNED_MASTERY;
+    record.wrongStreak = 0;
+    record.correctStreak = Math.max(record.correctStreak || 0, 3);
+    record.nextDueAt = new Date(Date.now() + 365 * DAY_MS).toISOString();
+  }
+
   function ensureProgressForItems(progress = loadProgress()) {
     const learned = loadLearned();
     let changed = false;
     getKnowledgeItems().forEach((item) => {
-      const learnedHit = Boolean(learned[learnedKeyForItem(item)] || learned[legacyLearnedKeyForItem(item)]);
-      const seeded = baseRecord(item, learnedHit ? 35 : 8);
+      const learnedHit = isItemLearned(item, learned);
+      const seeded = baseRecord(item, learnedHit ? LEARNED_MASTERY : 8);
       if (!progress[item.id]) {
         progress[item.id] = seeded;
+        if (learnedHit) lockLearnedRecord(progress[item.id]);
         changed = true;
       } else {
         const before = JSON.stringify(progress[item.id]);
-        const next = { ...seeded, ...progress[item.id] };
-        if (learnedHit && next.mastery < 35) next.mastery = 35;
+        const next = { ...seeded, ...progress[item.id], learned: learnedHit };
+        if (learnedHit) lockLearnedRecord(next);
         progress[item.id] = next;
         if (JSON.stringify(next) !== before) changed = true;
       }
@@ -116,7 +114,7 @@
       record.correctCount = (record.correctCount || 0) + 1;
       record.correctStreak = (record.correctStreak || 0) + 1;
       record.wrongStreak = 0;
-      record.mastery = clamp((record.mastery || 0) + weight + Math.min(6, record.correctStreak * 2), 0, 100);
+      record.mastery = clamp((record.mastery || 0) + weight + Math.min(14, record.correctStreak * 5), 0, 100);
       record.nextDueAt = new Date(now.getTime() + dueDays(record.correctStreak) * DAY_MS).toISOString();
     } else {
       record.wrongCount = (record.wrongCount || 0) + 1;
@@ -131,7 +129,7 @@
   }
 
   function questionWeight(type) {
-    return { multiple_choice: 8, fill_blank: 10, ja_to_zh: 10, zh_to_ja: 14, listening: 12, recording: 16 }[type] || 8;
+    return { multiple_choice: 18, fill_blank: 22, ja_to_zh: 20, zh_to_ja: 26, listening: 22, recording: 30 }[type] || 8;
   }
 
   function dueDays(streak) {
@@ -147,8 +145,8 @@
     const progress = ensureProgressForItems(loadProgress());
     const records = Object.values(progress);
     const answered = records.reduce((sum, item) => sum + (item.askedCount || 0), 0);
-    const mastered = records.filter((item) => (item.mastery || 0) >= 75).length;
-    const reviewing = records.filter((item) => (item.wrongStreak || 0) > 0 || isDue(item)).length;
+    const mastered = records.filter((item) => (item.mastery || 0) >= MASTERED_THRESHOLD || item.learned).length;
+    const reviewing = records.filter((item) => !item.learned && ((item.wrongStreak || 0) > 0 || isDue(item))).length;
     const average = records.length ? Math.round(records.reduce((sum, item) => sum + (item.mastery || 0), 0) / records.length) : 0;
     return { progress, records, answered, mastered, reviewing, average };
   }
@@ -159,10 +157,11 @@
   }
 
   function masteryState(record) {
+    if (record.learned) return "已學會";
     if ((record.wrongStreak || 0) >= 2) return "需要回來練";
-    if ((record.mastery || 0) >= 85) return "很穩";
-    if ((record.mastery || 0) >= 65) return "熟悉";
-    if ((record.mastery || 0) >= 35) return "練習中";
+    if ((record.mastery || 0) >= 80) return "很穩";
+    if ((record.mastery || 0) >= MASTERED_THRESHOLD) return "熟悉";
+    if ((record.mastery || 0) >= 30) return "練習中";
     return "剛開始";
   }
 
@@ -189,7 +188,7 @@
     const section = document.createElement("section");
     section.className = "learning-map-section";
     const sorted = [...records].sort((a, b) => (b.mastery || 0) - (a.mastery || 0));
-    const known = sorted.filter((item) => (item.mastery || 0) >= 65).length;
+    const known = sorted.filter((item) => (item.mastery || 0) >= MASTERED_THRESHOLD || item.learned).length;
     section.innerHTML = `<div class="learning-section-head"><div><h3>${CATEGORY_LABELS[categoryId] || categoryId}</h3><p>${known} / ${sorted.length} 個已經進入熟悉區。</p></div></div>`;
     const list = document.createElement("div");
     list.className = "learning-node-list";
@@ -215,8 +214,9 @@
     }, {});
   }
 
-  window.KotohaProgress = { PROGRESS_KEY, PATTERNS, CATEGORY_LABELS, loadProgress, saveProgress, loadLearned, getKnowledgeItems, ensureProgressForItems, recordQuizResult, getSummary, masteryState, isDue, renderLearningMap };
+  window.KotohaProgress = { PROGRESS_KEY, PATTERNS, CATEGORY_LABELS, loadProgress, saveProgress, loadLearned, getKnowledgeItems, ensureProgressForItems, recordQuizResult, getSummary, isItemLearned, masteryState, isDue, renderLearningMap };
   window.addEventListener("kotoha-progress-changed", renderLearningMap);
+  window.addEventListener("kotoha-learned-changed", () => { ensureProgressForItems(); renderLearningMap(); });
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", renderLearningMap);
   else renderLearningMap();
 })();
