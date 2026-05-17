@@ -19,8 +19,12 @@
 
   if (!openButton || !drawer || !backdrop || !home || !coachShell) return;
 
-  let activeFeature = localStorage.getItem(KOTOHA_ACTIVE_FEATURE_KEY) || "map";
+  const hashFeature = location.hash ? location.hash.replace("#", "") : "";
+  let activeFeature = ["map", "coach", "quiz", "learning-map"].includes(hashFeature)
+    ? hashFeature
+    : localStorage.getItem(KOTOHA_ACTIVE_FEATURE_KEY) || "map";
   if (!["map", "coach", "quiz", "learning-map"].includes(activeFeature)) activeFeature = "map";
+  if (!hashFeature && activeFeature !== "coach") activeFeature = "map";
 
   openButton.addEventListener("click", openDrawer);
   closeButton?.addEventListener("click", closeDrawer);
@@ -80,6 +84,12 @@
 
     if (showMap) {
       window.KotohaCoach?.renderCoachHistory?.();
+      if (sentenceInput) {
+        sentenceInput.disabled = false;
+        sentenceInput.readOnly = false;
+        sentenceInput.removeAttribute("disabled");
+        sentenceInput.removeAttribute("readonly");
+      }
       if (options.focus !== false) sentenceInput?.focus();
     } else if (showCoach) {
       learnedPanel.hidden = true;
