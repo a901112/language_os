@@ -2,6 +2,7 @@
   const SESSION_KEY = "kotoha-quiz-session-v1";
   const QUIZ_SPEECH_RATE = 0.72;
   const JAPANESE_RE = /[\u3040-\u30ff\u3400-\u9fff]/;
+  const KANA_RE = /[\u3040-\u30ff]/;
   const PATTERN_READINGS = {
     pattern_ga_suki_desu: {
       reading: "ねこがすきです。",
@@ -71,7 +72,8 @@
 
     const prompt = document.querySelector("#quiz-body .quiz-prompt");
     const hint = promptReading(question);
-    if (prompt && hint && JAPANESE_RE.test(prompt.textContent || "") && !document.querySelector("#quiz-body .quiz-kana-hint")) {
+    const promptText = prompt?.textContent || "";
+    if (prompt && hint && shouldShowPromptKana(question, promptText) && !document.querySelector("#quiz-body .quiz-kana-hint")) {
       const row = document.createElement("div");
       row.className = "quiz-kana-hint";
       row.textContent = `假名：${hint}`;
@@ -106,6 +108,14 @@
   function answerReading(question) {
     if (question.answerKana) return question.answerKana;
     return question.item?.reading || patternReading(question.itemId, "reading") || "";
+  }
+
+  function shouldShowPromptKana(question, promptText) {
+    if (!promptText || question.type === "listening") return false;
+    if (KANA_RE.test(promptText)) return true;
+    if (question.item?.ja && promptText.includes(question.item.ja)) return true;
+    if (question.type === "fill_blank" && patternReading(question.itemId, "blankReading")) return true;
+    return false;
   }
 
   function patternReading(itemId, key) {
