@@ -8,10 +8,23 @@
     localStorage.setItem = function setItemWithLearnedEvent(key, value) {
       originalSetItem(key, value);
       if (key === LEARNED_KEY) {
-        window.dispatchEvent(new CustomEvent("kotoha-learned-changed"));
+        queueLearnedChangedEvent();
       }
     };
     window.__kotohaLearnedEventBridge = true;
+  }
+
+  function queueLearnedChangedEvent() {
+    if (window.__kotohaLearnedEventQueued) return;
+    window.__kotohaLearnedEventQueued = true;
+    window.setTimeout(() => {
+      window.__kotohaLearnedEventQueued = false;
+      try {
+        window.dispatchEvent(new CustomEvent("kotoha-learned-changed"));
+      } catch (error) {
+        console.warn("Learned progress refresh failed.", error);
+      }
+    }, 0);
   }
 
   function loadLearned() {
