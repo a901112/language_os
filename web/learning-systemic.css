@@ -1,0 +1,16 @@
+.learning-node small {
+  display: block;
+  margin-top: 5px;
+  color: #35676a;
+  font-size: 12px;
+  opacity: 0.68;
+}
+
+.learning-more {
+  border: 1px dashed rgba(30, 95, 98, 0.16);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.42);
+  color: var(--muted);
+  font-size: 13px;
+  padding: 12px 14px;
+}
