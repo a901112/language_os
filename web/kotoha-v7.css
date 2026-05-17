@@ -1,0 +1,136 @@
+.v7-overview small {
+  display: block;
+  margin-top: 8px;
+  color: #35676a;
+  font-size: 12px;
+  line-height: 1.5;
+  opacity: 0.68;
+}
+
+.learning-filter-tabs {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 2px 0 4px;
+}
+
+.learning-filter {
+  border: 1px solid rgba(30, 95, 98, 0.13);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.58);
+  color: #244e50;
+  font-size: 13px;
+  min-height: 34px;
+  padding: 0 13px;
+  white-space: nowrap;
+}
+
+.learning-filter.active {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(30, 95, 98, 0.34);
+  color: #163d40;
+}
+
+.v7-scope-panel {
+  display: grid;
+  gap: 12px;
+}
+
+.v7-scope-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.v7-scope-card,
+.v7-register-card {
+  border: 1px solid rgba(30, 95, 98, 0.1);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.62);
+  padding: 14px;
+}
+
+.v7-scope-card span,
+.v7-register-card small {
+  color: #35676a;
+  font-size: 12px;
+  line-height: 1.45;
+  opacity: 0.72;
+}
+
+.v7-scope-card strong {
+  display: block;
+  margin: 6px 0 4px;
+  color: #153f42;
+  font-size: 24px;
+}
+
+.v7-scope-card small {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.v7-scenario-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.v7-scenario-strip span {
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.48);
+  color: #35676a;
+  font-size: 12px;
+  padding: 6px 10px;
+}
+
+.v7-register-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.v7-register-card strong {
+  display: block;
+  color: #153f42;
+  margin-bottom: 4px;
+}
+
+.v7-register-card p {
+  margin: 0 0 10px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.v7-register-card dl {
+  display: grid;
+  gap: 6px;
+  margin: 0 0 10px;
+}
+
+.v7-register-card dl div {
+  display: grid;
+  grid-template-columns: 64px 1fr;
+  gap: 8px;
+  align-items: baseline;
+}
+
+.v7-register-card dt {
+  color: #35676a;
+  font-size: 12px;
+}
+
+.v7-register-card dd {
+  margin: 0;
+  color: #153f42;
+  font-size: 14px;
+}
+
+@media (max-width: 720px) {
+  .v7-scope-grid,
+  .v7-register-grid {
+    grid-template-columns: 1fr;
+  }
+}
