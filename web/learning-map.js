@@ -12,27 +12,21 @@
 
   const CATEGORY_LABELS = { animal: "動物", time: "時間", food: "食物", place: "地點", rental: "租借", action: "動作", pattern: "句型", object: "物品" };
 
-  function loadProgress() {
+  function loadJSON(key, fallback) {
     try {
-      const parsed = JSON.parse(localStorage.getItem(PROGRESS_KEY) || "{}");
-      return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : {};
+      const parsed = JSON.parse(localStorage.getItem(key) || JSON.stringify(fallback));
+      return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : fallback;
     } catch {
-      return {};
+      return fallback;
     }
   }
+
+  function loadProgress() { return loadJSON(PROGRESS_KEY, {}); }
+  function loadLearned() { return loadJSON(LEARNED_KEY, {}); }
 
   function saveProgress(progress) {
     localStorage.setItem(PROGRESS_KEY, JSON.stringify(progress));
     window.dispatchEvent(new CustomEvent("kotoha-progress-changed"));
-  }
-
-  function loadLearned() {
-    try {
-      const parsed = JSON.parse(localStorage.getItem(LEARNED_KEY) || "{}");
-      return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : {};
-    } catch {
-      return {};
-    }
   }
 
   function getVocabItems() {
@@ -54,8 +48,27 @@
     );
   }
 
-  function getKnowledgeItems() {
-    return [...getVocabItems(), ...PATTERNS];
+  function getKnowledgeItems() { return [...getVocabItems(), ...PATTERNS]; }
+
+  function baseRecord(item, mastery = 8) {
+    return {
+      id: item.id,
+      type: item.type,
+      categoryId: item.categoryId,
+      label: item.label || item.ja || item.id,
+      zh: item.zh || "",
+      mastery,
+      seenCount: 0,
+      askedCount: 0,
+      correctCount: 0,
+      wrongCount: 0,
+      correctStreak: 0,
+      wrongStreak: 0,
+      lastAskedAt: "",
+      nextDueAt: "",
+      recentQuestionIds: [],
+      lastQuestionType: "",
+    };
   }
 
   function learnedKeyForItem(item) {
@@ -70,21 +83,23 @@
 
   function ensureProgressForItems(progress = loadProgress()) {
     const learned = loadLearned();
+    let changed = false;
     getKnowledgeItems().forEach((item) => {
       const learnedHit = Boolean(learned[learnedKeyForItem(item)] || learned[legacyLearnedKeyForItem(item)]);
+      const seeded = baseRecord(item, learnedHit ? 35 : 8);
       if (!progress[item.id]) {
-        progress[item.id] = baseRecord(item, learnedHit ? 35 : 8);
+        progress[item.id] = seeded;
+        changed = true;
       } else {
-        progress[item.id] = { ...baseRecord(item, learnedHit ? 35 : 8), ...progress[item.id] };
-        if (learnedHit && progress[item.id].mastery < 35) progress[item.id].mastery = 35;
+        const before = JSON.stringify(progress[item.id]);
+        const next = { ...seeded, ...progress[item.id] };
+        if (learnedHit && next.mastery < 35) next.mastery = 35;
+        progress[item.id] = next;
+        if (JSON.stringify(next) !== before) changed = true;
       }
     });
-    saveProgress(progress);
+    if (changed) saveProgress(progress);
     return progress;
-  }
-
-  function baseRecord(item, mastery = 8) {
-    return { id: item.id, type: item.type, categoryId: item.categoryId, label: item.label || item.ja, zh: item.zh || "", mastery, seenCount: 0, askedCount: 0, correctCount: 0, wrongCount: 0, correctStreak: 0, wrongStreak: 0, lastAskedAt: "", nextDueAt: "", recentQuestionIds: [], lastQuestionType: "" };
   }
 
   function recordQuizResult(question, isCorrect) {
@@ -126,9 +141,7 @@
     return 1;
   }
 
-  function clamp(value, min, max) {
-    return Math.max(min, Math.min(max, value));
-  }
+  function clamp(value, min, max) { return Math.max(min, Math.min(max, value)); }
 
   function getSummary() {
     const progress = ensureProgressForItems(loadProgress());
@@ -204,5 +217,6 @@
 
   window.KotohaProgress = { PROGRESS_KEY, PATTERNS, CATEGORY_LABELS, loadProgress, saveProgress, loadLearned, getKnowledgeItems, ensureProgressForItems, recordQuizResult, getSummary, masteryState, isDue, renderLearningMap };
   window.addEventListener("kotoha-progress-changed", renderLearningMap);
-  document.addEventListener("DOMContentLoaded", renderLearningMap);
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", renderLearningMap);
+  else renderLearningMap();
 })();
