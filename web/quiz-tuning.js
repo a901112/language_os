@@ -7,11 +7,16 @@
     const originalSetItem = localStorage.setItem.bind(localStorage);
     localStorage.setItem = function setItemWithLearnedEvent(key, value) {
       originalSetItem(key, value);
-      if (key === LEARNED_KEY) {
+      if (key === LEARNED_KEY && shouldBridgeLearnedEvent()) {
         queueLearnedChangedEvent();
       }
     };
     window.__kotohaLearnedEventBridge = true;
+  }
+
+  function shouldBridgeLearnedEvent() {
+    const activeFeature = document.querySelector("#home")?.dataset.feature;
+    return activeFeature === "quiz" || activeFeature === "learning-map";
   }
 
   function queueLearnedChangedEvent() {
@@ -106,6 +111,7 @@
     };
 
     window.addEventListener("kotoha-learned-changed", () => {
+      if (!shouldBridgeLearnedEvent()) return;
       api.ensureProgressForItems(api.loadProgress());
     });
     api.__kotohaV5Tuned = true;
