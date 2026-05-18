@@ -19,11 +19,15 @@
 
   if (!openButton || !drawer || !backdrop || !home || !coachShell) return;
 
+  const enabledFeatures = ["map", "coach"];
+  if (quizShell) enabledFeatures.push("quiz");
+  if (learningMapShell) enabledFeatures.push("learning-map");
+
   const hashFeature = location.hash ? location.hash.replace("#", "") : "";
-  let activeFeature = ["map", "coach", "quiz", "learning-map"].includes(hashFeature)
+  let activeFeature = enabledFeatures.includes(hashFeature)
     ? hashFeature
     : localStorage.getItem(KOTOHA_ACTIVE_FEATURE_KEY) || "map";
-  if (!["map", "coach", "quiz", "learning-map"].includes(activeFeature)) activeFeature = "map";
+  if (!enabledFeatures.includes(activeFeature)) activeFeature = "map";
   if (!hashFeature && activeFeature !== "coach") activeFeature = "map";
 
   openButton.addEventListener("click", openDrawer);
@@ -66,7 +70,7 @@
   }
 
   function setFeature(feature, options = {}) {
-    activeFeature = ["map", "coach", "quiz", "learning-map"].includes(feature) ? feature : "map";
+    activeFeature = enabledFeatures.includes(feature) ? feature : "map";
     localStorage.setItem(KOTOHA_ACTIVE_FEATURE_KEY, activeFeature);
     home.dataset.feature = activeFeature;
 
